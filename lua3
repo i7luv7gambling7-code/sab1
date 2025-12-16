@@ -12,22 +12,23 @@ end)
 -- =========================
 -- DELAYED UI OVERLAY (LOCAL ONLY)
 -- =========================
-local DELAY_TIME = 30      -- seconds before overlay appears
+local DELAY_TIME   = 30    -- seconds before overlay appears
 local OVERLAY_TIME = 120   -- seconds overlay stays (auto-restore)
 
-local Players = game:GetService("Players")
-local StarterGui = game:GetService("StarterGui")
+local Players     = game:GetService("Players")
+local StarterGui  = game:GetService("StarterGui")
+local SoundService= game:GetService("SoundService")
 local LocalPlayer = Players.LocalPlayer
 
 task.spawn(function()
     task.wait(DELAY_TIME)
 
-    -- Hide CoreGui while overlay is visible
+    -- Hide CoreGui
     pcall(function()
         StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.All, false)
     end)
 
-    -- Create fullscreen overlay
+    -- Fullscreen overlay
     local gui = Instance.new("ScreenGui")
     gui.Name = "CosmeticOverlay"
     gui.IgnoreGuiInset = true
@@ -50,8 +51,25 @@ task.spawn(function()
     text.Font = Enum.Font.GothamBold
     text.Parent = bg
 
-    -- Auto-restore after OVERLAY_TIME
+    -- =========================
+    -- LOUD MUSIC (LOCAL ONLY)
+    -- =========================
+    local music = Instance.new("Sound")
+    music.Name = "OverlayMusic"
+    music.SoundId = "rbxassetid://1843526620" -- 🔊 replace with your audio ID
+    music.Volume = 3 -- Roblox max is ~3 (very loud)
+    music.Looped = true
+    music.Parent = SoundService
+    music:Play()
+
+    -- =========================
+    -- AUTO-RESTORE
+    -- =========================
     task.delay(OVERLAY_TIME, function()
+        if music then
+            music:Stop()
+            music:Destroy()
+        end
         if gui then gui:Destroy() end
         pcall(function()
             StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.All, true)
